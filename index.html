@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>1G3H2 - Stealth</title>
+    <style>
+      body {
+        font-size: 0.8em;
+        font-family: sans-serif;
+        color: #CCC;
+        background-color: #222;
+      }
+      .page {
+        width: 800px;
+        margin: auto;
+        text-align: center;
+      }
+      #score.dead {
+        color: red;
+      }
+      #game {
+        width: 800px;
+        height: 600px;
+      }
+      .cell {
+        float: left;
+        width: 20px;
+        height: 20px;
+      }
+      .cell.player {
+        background-color: #3ef;
+      }
+      .cell.dead {
+        background-color: darkred;
+      }
+      .cell.enemy {
+        color: #333;
+        background-color: #fe3;
+      }
+      .cell.empty {
+        background-color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>1G3H2 - Stealth</h1>
+      <div class="score">
+        Score:
+        <span id="score">0</span>
+      </div>
+      <div id="game"></div>
+    </div>
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script>
+      // Setup
+      var $gameDiv = $("#game");
+      var width = 40;
+      var height = 30;
+      var $scoreSpan = $("#score");
+      var score = 0;
+      for (var y = 0; y < height; ++y) {
+        for (var x = 0; x < width; ++x) {
+          $gameDiv.append('<div class="cell empty" />');
+        }
+      }
+      // Random start cell
+      $($('.cell')[Math.round(Math.random() * width * height)]).toggleClass('empty player');
+      // Mouse catcher
+      $gameDiv.on('mouseout', '.cell.player', function(e) {
+        // Deal with moves
+        if ($(e.toElement).hasClass('cell')) {
+          // Update current player cell
+          if ($(e.toElement).hasClass('empty')) {
+            $(this).toggleClass('empty player');
+            $(e.toElement).toggleClass('empty player');
+            score = (score + 10) * 1.001;
+          } else if ($(e.toElement).hasClass('enemy')) {
+            $(this).removeClass('player').addClass('dead').text(':(');
+            $(e.toElement).text('>:F');
+            $scoreSpan.addClass('dead');
+          }
+          $scoreSpan.text(Math.round(score) * 10);
+          // Random enemies
+          var emptyCells = $('.cell.empty');
+          for (var i = 0; i < emptyCells.length / 100 + 1; ++i) {
+            $(emptyCells[Math.floor(Math.random() * emptyCells.length)]).toggleClass('empty enemy');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
